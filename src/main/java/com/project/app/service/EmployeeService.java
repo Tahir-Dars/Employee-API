@@ -69,6 +69,7 @@ public class EmployeeService {
 
 
     public EmployeeResponseDTO getEmployeesWithParamsAlot(Integer pageNumber, Integer pageSize, String sortBy1, String sortBy2) {
+
         Sort sort = Sort.by(
                 Sort.Order.asc(sortBy1),
                 Sort.Order.asc(sortBy2)
