@@ -33,7 +33,7 @@ public class EmployeeService {
             throw new APIException("No Employees on record !!");
         }
         List<EmployeeDTO> employeeDTOS = employeePage.stream()
-                .map(category -> modelMapper.map(category, EmployeeDTO.class))
+                .map(employee -> modelMapper.map(employee, EmployeeDTO.class))
                 .toList();
         return EmployeeResponseDTO.builder()
                 .employeesList(employeeDTOS)
@@ -46,6 +46,24 @@ public class EmployeeService {
     }
 
     public EmployeeResponseDTO getEmployeesWithParams(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
-        return new EmployeeResponseDTO();
+        Sort sortBy_Order = sortOrder.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sortBy_Order);
+        Page<Employee> employeePage=employeeRepository.findAll(pageable);
+        if (employeePage.isEmpty()){
+            throw  new APIException("No Employee here");
+        }
+        List<EmployeeDTO> employeeDTOS = employeePage.stream()
+                .map(employee -> modelMapper.map(employee, EmployeeDTO.class))
+                .toList();
+        return EmployeeResponseDTO.builder()
+                .employeesList(employeeDTOS)
+                .pageNumber(employeePage.getNumber())
+                .pageSize(employeePage.getSize())
+                .totalElements(employeePage.getTotalElements())
+                .lastPage(employeePage.isLast())
+                .totalPages(employeePage.getTotalPages())
+                .build();
     }
 }
