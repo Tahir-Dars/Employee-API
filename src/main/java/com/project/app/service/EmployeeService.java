@@ -24,12 +24,12 @@ public class EmployeeService {
     private final ModelMapper modelMapper;
 
     public EmployeeResponseDTO getAllEmployees() {
-        Sort sortOrder=Sort.by(AppConstants.SORT_EMPLOYES_USING_F).ascending();
-        int pageNumber= 0;
-        int pageSize=Integer.parseInt(AppConstants.PAGE_SIZE);
+        Sort sortOrder = Sort.by(AppConstants.SORT_EMPLOYES_USING_F).ascending();
+        int pageNumber = 0;
+        int pageSize = Integer.parseInt(AppConstants.PAGE_SIZE);
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sortOrder);
-        Page<Employee> employeePage=employeeRepository.findAll(pageable);
-        if (employeePage.isEmpty()){
+        Page<Employee> employeePage = employeeRepository.findAll(pageable);
+        if (employeePage.isEmpty()) {
             throw new APIException("No Employees on record !!");
         }
         List<EmployeeDTO> employeeDTOS = employeePage.stream()
@@ -50,9 +50,9 @@ public class EmployeeService {
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sortBy_Order);
-        Page<Employee> employeePage=employeeRepository.findAll(pageable);
-        if (employeePage.isEmpty()){
-            throw  new APIException("No Employee here");
+        Page<Employee> employeePage = employeeRepository.findAll(pageable);
+        if (employeePage.isEmpty()) {
+            throw new APIException("No Employee here");
         }
         List<EmployeeDTO> employeeDTOS = employeePage.stream()
                 .map(employee -> modelMapper.map(employee, EmployeeDTO.class))
@@ -66,4 +66,29 @@ public class EmployeeService {
                 .totalPages(employeePage.getTotalPages())
                 .build();
     }
+
+
+    public EmployeeResponseDTO getEmployeesWithParamsAlot(Integer pageNumber, Integer pageSize, String sortBy1, String sortBy2) {
+        Sort sort = Sort.by(
+                Sort.Order.asc(sortBy1),
+                Sort.Order.asc(sortBy2)
+        );
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Page<Employee> employeePage = employeeRepository.findAll(pageable);
+        if (employeePage.isEmpty()) {
+            throw new APIException("No Employee here");
+        }
+        List<EmployeeDTO> employeeDTOS = employeePage.stream()
+                .map(employee -> modelMapper.map(employee, EmployeeDTO.class))
+                .toList();
+        return EmployeeResponseDTO.builder()
+                .employeesList(employeeDTOS)
+                .pageNumber(employeePage.getNumber())
+                .pageSize(employeePage.getSize())
+                .totalElements(employeePage.getTotalElements())
+                .lastPage(employeePage.isLast())
+                .totalPages(employeePage.getTotalPages())
+                .build();
+    }
+
 }

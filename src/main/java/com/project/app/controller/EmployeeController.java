@@ -27,11 +27,20 @@ public class EmployeeController {
     public ResponseEntity<EmployeeResponseDTO> getEmployeesWithParams(
             @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
             @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
-            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_EMPLOYES_USING_L, required = false) String sortBy,
-            @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_ORDER, required = false) String sortOrder
+            @RequestParam(name = "sortBy1", defaultValue = AppConstants.SORT_EMPLOYES_USING_L, required = false) String sortBy1,
+            @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_ORDER, required = false) String sortOrder1,
+            @RequestParam(name = "sortBy2", defaultValue = AppConstants.SORT_EMPLOYES_USING_Salary, required = false) String sortBy2,
+            @RequestParam(name = "dept", required = false) String dept
     ) {
+        if (sortBy2 == null || sortBy2.isEmpty()) {
+            EmployeeResponseDTO responseDTO = employeeService
+                    .getEmployeesWithParams(pageNumber, pageSize, sortBy1, sortOrder1);
+            return ResponseEntity.ok(responseDTO);
+
+        }
         EmployeeResponseDTO responseDTO = employeeService
-                .getEmployeesWithParams(pageNumber, pageSize, sortBy, sortOrder);
+                .getEmployeesWithParamsAlot(pageNumber, pageSize, sortBy1, sortBy2);
+
         return ResponseEntity.ok(responseDTO);
     }
 }
