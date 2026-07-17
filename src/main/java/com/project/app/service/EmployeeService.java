@@ -24,9 +24,9 @@ public class EmployeeService {
     private final ModelMapper modelMapper;
 
     public EmployeeResponseDTO getAllEmployees() {
-        Sort sortOrder=Sort.by(AppConstants.SORT_EMPLOYES_USING).ascending();
-        int pageNumber=AppConstants.PAGE_NUMBER;
-        int pageSize=AppConstants.PAGE_SIZE;
+        Sort sortOrder=Sort.by(AppConstants.SORT_EMPLOYES_USING_F).ascending();
+        int pageNumber= 0;
+        int pageSize=Integer.parseInt(AppConstants.PAGE_SIZE);
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sortOrder);
         Page<Employee> employeePage=employeeRepository.findAll(pageable);
         if (employeePage.isEmpty()){
@@ -35,7 +35,7 @@ public class EmployeeService {
         List<EmployeeDTO> employeeDTOS = employeePage.stream()
                 .map(category -> modelMapper.map(category, EmployeeDTO.class))
                 .toList();
-        EmployeeResponseDTO responseDTO=EmployeeResponseDTO.builder()
+        return EmployeeResponseDTO.builder()
                 .employeesList(employeeDTOS)
                 .pageNumber(employeePage.getNumber())
                 .pageSize(employeePage.getSize())
@@ -43,6 +43,9 @@ public class EmployeeService {
                 .lastPage(employeePage.isLast())
                 .totalPages(employeePage.getTotalPages())
                 .build();
-        return responseDTO;
+    }
+
+    public EmployeeResponseDTO getEmployeesWithParams(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        return new EmployeeResponseDTO();
     }
 }
